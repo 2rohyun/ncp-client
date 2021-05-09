@@ -20,18 +20,30 @@ class SmsServiceTest {
     @Autowired
     private SmsService smsService;
 
-    @Autowired
-    private InitService initService;
 
     @Test
-    @DisplayName("문자 메세지 전송 - 성공")
-    void sendSmsTest() throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
+    @DisplayName("문자 메세지 전송 - 성공 ( 국가 코드 default )")
+    void sendSmsWithDefaultCountryCode() throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
         smsService.sendSms("01072117883","문자 제대로 가는지 테스트임ㅋ");
 
     }
+    @Test
+    @DisplayName("문자 메세지 전송 - 성공 ( 국가 코드 입력 )")
+    void sendSmsWithInputCountryCode() throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
+        smsService.sendSms("01072117883","문자 제대로 가는지 테스트임ㅋ", "82");
+
+    }
 
     @Test
-    void generateSig() throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-        initService.makeSignature(Long.toString(System.currentTimeMillis()));
+    @DisplayName("요청 매세지 조회 - 성공")
+    void searchMessageRequestTest() throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException, URISyntaxException {
+        smsService.searchMessageRequest("7d6841f9380a403fb366f6f54dc66b03");
     }
+
+    @Test
+    @DisplayName("응답 매세지 조회 - 성공")
+    void searchMessageResultTest() throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException, URISyntaxException {
+        smsService.searchMessageResult("0-ESA-202105-4473189-0");
+    }
+
 }

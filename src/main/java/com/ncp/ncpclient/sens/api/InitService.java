@@ -24,11 +24,9 @@ public class InitService {
     @Value("${api.secretKey}")
     private String secret;
 
-    public String makeSignature(String time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+    public String makeSignature(String time, String method, String url) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         String space = " ";					// one space
         String newLine = "\n";					// new line
-        String method = "POST";					// method
-        String url = "/sms/v2/services/" + serviceId + "/messages"; // url (include query string)
         String accessKey = access;	// access key id (from portal or Sub Account)
         String secretKey = secret;
 
