@@ -8,6 +8,7 @@ import com.ncp.ncpclient.sens.dto.request.SmsRequestDto;
 import com.ncp.ncpclient.sens.dto.response.SearchRequestResponseDto;
 import com.ncp.ncpclient.sens.dto.response.SearchResultResponseDto;
 import com.ncp.ncpclient.sens.dto.response.SmsResponseDto;
+import com.ncp.ncpclient.sens.utils.ApiRequestUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +19,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ncp.ncpclient.sens.utils.ApiRequestUtil.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,19 +64,8 @@ public class SmsService {
      * @return : ResponseEntity<SmsResponseDto>
      */
     public ResponseEntity<SmsResponseDto> sendSms(String recipientPhoneNumber, String content) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
-
         SmsRequestDto smsRequestDto = createSmsRequest(recipientPhoneNumber, content);
-        HttpEntity<String> requestToJson = smsRequestToJson(smsRequestDto);
-
-        // requested json format ( include header & body )
-        log.info("requested json : {}", requestToJson);
-
-        ResponseEntity<SmsResponseDto> res = sendSmsRequest(requestToJson, BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL);
-
-        // send post request, success = status code 202
-        log.info("send sms response : {}",res);
-
-        return res;
+        return sendRequest(smsRequestToJson(smsRequestDto), BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL, HttpMethod.POST);
     }
 
     /**
@@ -82,17 +76,7 @@ public class SmsService {
      */
     public ResponseEntity<SmsResponseDto> sendSms(String recipientPhoneNumber, String content, String countryCode) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         SmsRequestDto smsRequestDto = createSmsRequest(recipientPhoneNumber, content, countryCode);
-        HttpEntity<String> requestToJson = smsRequestToJson(smsRequestDto);
-
-        // requested json format ( include header & body )
-        log.info("requested json : {}", requestToJson);
-
-        ResponseEntity<SmsResponseDto> res = sendSmsRequest(requestToJson,BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL);
-
-        // send post request, success = status code 202
-        log.info("send sms response : {}",res);
-
-        return res;
+        return sendRequest(smsRequestToJson(smsRequestDto),BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL, HttpMethod.POST);
     }
 
     /**
@@ -100,10 +84,9 @@ public class SmsService {
      * @return : ResponseEntity<SearchRequestResponseDto>
      */
     public ResponseEntity<SearchRequestResponseDto> searchMessageRequest(String requestId) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-        HttpEntity<String> requestToJson = searchMessageRequestToJson(requestId);
-        ResponseEntity<SearchRequestResponseDto> res = sendSearchMessageRequest(requestToJson, BASE_URL + BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + requestId);
-        log.info("search message request's response : {}", res);
-        return res;
+        return sendRequest(searchMessageRequestToJson(requestId),
+                        BASE_URL + BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + requestId,
+                            HttpMethod.GET);
     }
 
     /**
@@ -111,25 +94,9 @@ public class SmsService {
      * @return : ResponseEntity<SearchResultResponseDto>
      */
     public ResponseEntity<SearchResultResponseDto> searchMessageResult(String messageId) throws URISyntaxException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-        HttpEntity<String> requestToJson = searchMessageResultToJson(messageId);
-        ResponseEntity<SearchResultResponseDto> res = sendSearchMessageResult(requestToJson, BASE_URL + BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + messageId);
-        log.info("search message result's response : {}", res);
-        return res;
-    }
-
-    private ResponseEntity<SmsResponseDto> sendSmsRequest(HttpEntity<String> req, String url) throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.exchange(new URI(url), HttpMethod.POST, req, SmsResponseDto.class);
-    }
-
-    private ResponseEntity<SearchRequestResponseDto> sendSearchMessageRequest(HttpEntity<String> requestToJson, String url) throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.exchange(new URI(url), HttpMethod.GET, requestToJson, SearchRequestResponseDto.class);
-    }
-
-    private ResponseEntity<SearchResultResponseDto> sendSearchMessageResult(HttpEntity<String> requestToJson, String url) throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.exchange(new URI(url), HttpMethod.GET, requestToJson, SearchResultResponseDto.class);
+        return sendRequest(searchMessageResultToJson(messageId),
+                        BASE_URL + BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + messageId,
+                            HttpMethod.GET);
     }
 
     private HttpEntity<String> smsRequestToJson(SmsRequestDto smsRequestDto) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
@@ -137,10 +104,11 @@ public class SmsService {
         String jsonBody = getHttpBody(smsRequestDto);
 
         // header configuration
-        HttpHeaders headers = getHttpHeader(Long.toString(System.currentTimeMillis()));
+        String time = Long.toString(System.currentTimeMillis());
+        HttpHeaders headers = getHttpHeader(time);
 
         // signature
-        String sig = initService.makeSignature(Long.toString(System.currentTimeMillis()),"POST", BASE_SMS_URL + serviceId + SEND_SMS_URL);
+        String sig = initService.makeSignature(time,"POST", BASE_SMS_URL + serviceId + SEND_SMS_URL);
         headers.set("x-ncp-apigw-signature-v2", sig);
 
         // json body + json header
@@ -149,20 +117,22 @@ public class SmsService {
 
     private HttpEntity<String> searchMessageResultToJson(String messageId) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         // header configuration
-        HttpHeaders headers = getHttpHeader(Long.toString(System.currentTimeMillis()));
+        String time = Long.toString(System.currentTimeMillis());
+        HttpHeaders headers = getHttpHeader(time);
 
         // signature
-        String sig = initService.makeSignature(Long.toString(System.currentTimeMillis()),"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + messageId);
+        String sig = initService.makeSignature(time,"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + messageId);
         headers.set("x-ncp-apigw-signature-v2", sig);
         return new HttpEntity<>(headers);
     }
 
     private HttpEntity<String> searchMessageRequestToJson(String requestId) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
         // header configuration
-        HttpHeaders headers = getHttpHeader(Long.toString(System.currentTimeMillis()));
+        String time = Long.toString(System.currentTimeMillis());
+        HttpHeaders headers = getHttpHeader(time);
 
         // signature
-        String sig = initService.makeSignature(Long.toString(System.currentTimeMillis()),"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + requestId);
+        String sig = initService.makeSignature(time,"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + requestId);
         headers.set("x-ncp-apigw-signature-v2", sig);
         return new HttpEntity<>(headers);
     }
