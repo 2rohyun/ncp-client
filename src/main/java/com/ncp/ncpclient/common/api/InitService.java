@@ -1,4 +1,4 @@
-package com.ncp.ncpclient.sens.api;
+package com.ncp.ncpclient.common.api;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -15,16 +16,13 @@ import java.security.NoSuchAlgorithmException;
 @PropertySource("classpath:ncp.properties")
 public class InitService {
 
-    @Value("${sms.serviceId}")
-    private String serviceId;
-
     @Value("${api.accessKey}")
     private String access;
 
     @Value("${api.secretKey}")
     private String secret;
 
-    public String makeSignature(String time, String method, String url) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+    public String makeSignature(String time, String method, String url) throws NoSuchAlgorithmException, InvalidKeyException {
         String space = " ";					// one space
         String newLine = "\n";					// new line
         String accessKey = access;	// access key id (from portal or Sub Account)
@@ -39,11 +37,11 @@ public class InitService {
                 newLine +
                 accessKey;
 
-        SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA256");
+        SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
         Mac mac = Mac.getInstance("HmacSHA256");
         mac.init(signingKey);
 
-        byte[] rawHmac = mac.doFinal(message.getBytes("UTF-8"));
+        byte[] rawHmac = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
 
         return Base64.encodeBase64String(rawHmac);
     }
