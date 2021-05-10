@@ -1,11 +1,10 @@
-package com.ncp.ncpclient.sens.dto;
+package com.ncp.ncpclient.sens.dto.response;
 
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 

@@ -1,8 +1,7 @@
-package com.ncp.ncpclient.sens.dto;
+package com.ncp.ncpclient.sens.dto.request;
 
 
 import lombok.*;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

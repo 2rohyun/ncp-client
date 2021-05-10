@@ -1,4 +1,4 @@
-package com.ncp.ncpclient.sens.dto;
+package com.ncp.ncpclient.sens.dto.response;
 
 
 import lombok.AllArgsConstructor;
