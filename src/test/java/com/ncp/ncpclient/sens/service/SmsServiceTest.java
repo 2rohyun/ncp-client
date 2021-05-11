@@ -1,10 +1,12 @@
 package com.ncp.ncpclient.sens.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ncp.ncpclient.sens.dto.response.SmsResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -21,7 +23,9 @@ class SmsServiceTest {
     @Test
     @DisplayName("문자 메세지 전송 - 성공 ( 국가 코드 default )")
     void sendSmsWithDefaultCountryCode() throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
-        smsService.sendSms("01072117883","문자 제대로 가는지 테스트임ㅋ");
+        ResponseEntity<SmsResponseDto> res = smsService.sendSms("01072117883", "문자 제대로 가는지 테스트임ㅋ");
+        System.out.println("res = " + res);
+
 
     }
     @Test
@@ -42,5 +46,6 @@ class SmsServiceTest {
     void searchMessageResultTest() throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         smsService.searchMessageResult("0-ESA-202105-4473189-0");
     }
+
 
 }

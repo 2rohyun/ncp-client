@@ -10,13 +10,10 @@ import com.ncp.ncpclient.sens.dto.response.SearchResultResponseDto;
 import com.ncp.ncpclient.sens.dto.response.SmsResponseDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -28,7 +25,6 @@ import static com.ncp.ncpclient.common.utils.ApiRequestUtil.*;
 @Service
 @RequiredArgsConstructor
 @PropertySource("classpath:ncp.properties")
-@Slf4j
 @Getter
 public class SmsService {
 
@@ -58,7 +54,8 @@ public class SmsService {
      * @param content : message content
      * @return : ResponseEntity<SmsResponseDto>
      */
-    public ResponseEntity<SmsResponseDto> sendSms(String recipientPhoneNumber, String content) throws JsonProcessingException, UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
+    public ResponseEntity<SmsResponseDto> sendSms(String recipientPhoneNumber, String content)
+            throws JsonProcessingException, NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
         SmsRequestDto smsRequestDto = createSmsRequest(recipientPhoneNumber, content);
         return sendRequest(smsRequestToJson(smsRequestDto),
                         BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL,

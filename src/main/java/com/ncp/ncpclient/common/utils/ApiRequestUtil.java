@@ -1,5 +1,7 @@
 package com.ncp.ncpclient.common.utils;
 
+import com.ncp.ncpclient.sens.exception.SensException;
+import com.ncp.ncpclient.sens.exception.SensExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Pattern;
 
 @Data
 @AllArgsConstructor
@@ -29,11 +32,19 @@ public class ApiRequestUtil<T> {
      */
     public static <T> ResponseEntity<T> sendRequest(HttpEntity<String> requestToJson, String url, HttpMethod method) throws URISyntaxException {
         RestTemplate restTemplate = new RestTemplate();
+//        if (!validateURL(url)) {
+//            throw new SensException(SensExceptionType.INVALID_URL);
+//        }
         return restTemplate.exchange(new URI(url), method, requestToJson, new ParameterizedTypeReference<>() {
             @Override
             public Type getType() {
                 return super.getType();
             }
         });
+    }
+
+    //TODO ( fix regexp or change exception throw logic )
+    private static boolean validateURL(String url) {
+        return Pattern.matches("/(http|https):\\/\\/(\\w+:?\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?/", url);
     }
 }
