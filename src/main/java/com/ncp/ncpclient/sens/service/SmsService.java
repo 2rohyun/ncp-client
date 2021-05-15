@@ -151,12 +151,14 @@ public class SmsService {
         headers.set("x-ncp-iam-access-key", access);
 
         if(url.contains("?")){
-            String sig = initService.makeSignature(time,"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + id);
+            String sig = initService.makeSignature(time,"GET",
+                                                BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + id);
             headers.set("x-ncp-apigw-signature-v2", sig);
             return headers;
         }
 
-        String sig = initService.makeSignature(time,"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + id);
+        String sig = initService.makeSignature(time,"GET",
+                                            BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + id);
         headers.set("x-ncp-apigw-signature-v2", sig);
         return headers;
     }
