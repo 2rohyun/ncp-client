@@ -1,13 +1,14 @@
 package com.ncp.ncpclient.sens.dto.response;
 
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SearchResultMessageResponseDto {
 
     private String requestTime;
