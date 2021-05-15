@@ -14,13 +14,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.ncp.ncpclient.common.utils.ApiRequestUtil.sendRequest;
 import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.*;
+import static org.springframework.http.HttpMethod.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +55,10 @@ public class PapagoService {
     public ResponseEntity<NmtResponseDto> translation(String source, String target, String text)
             throws JsonProcessingException, URISyntaxException {
         NmtRequestDto nmtRequestDto = createNmtRequest(source, target, text);
-        return sendRequest(NmtRequestToJson(nmtRequestDto),NMT_BASE_URL,HttpMethod.POST);
+        return sendRequest(NmtRequestToJson(nmtRequestDto),
+                            NMT_BASE_URL,
+                            POST,
+                            NmtResponseDto.class);
     }
 
     /**
@@ -64,9 +71,11 @@ public class PapagoService {
     public ResponseEntity<NmtResponseDto> translation(String source, String target, String text, boolean honorific)
             throws JsonProcessingException, URISyntaxException {
         NmtRequestDto nmtRequestDto = createNmtRequest(source, target, text, honorific);
-        return sendRequest(NmtRequestToJson(nmtRequestDto),NMT_BASE_URL,HttpMethod.POST);
+        return sendRequest(NmtRequestToJson(nmtRequestDto),
+                            NMT_BASE_URL,
+                            POST,
+                            NmtResponseDto.class);
     }
-
 
     /**
      * @param text : Language you want to detect
@@ -75,7 +84,10 @@ public class PapagoService {
     public ResponseEntity<DetectionResponseDto> detection(String text)
             throws URISyntaxException, JsonProcessingException {
         DetectionRequestDto detectionRequestDto = createDetectionRequest(text);
-        return sendRequest(DetectionRequestToJson(detectionRequestDto), DETECTION_BASE_URL, HttpMethod.POST);
+        return sendRequest(DetectionRequestToJson(detectionRequestDto),
+                            DETECTION_BASE_URL,
+                            POST,
+                            DetectionResponseDto.class);
     }
 
     /**
@@ -84,10 +96,12 @@ public class PapagoService {
      */
     public ResponseEntity<KoreanNameRomanizerResponseDto> romanization(String koreanName)
             throws URISyntaxException {
-        String encodedName = encode(koreanName, StandardCharsets.UTF_8);
+        String encodedName = encode(koreanName, UTF_8);
+        System.out.println(RomanizationRequestToJson());
         return sendRequest(RomanizationRequestToJson(),
                         KOREAN_NAME_ROMANIZER_BASE_URL + KOREAN_NAME_ROMANIZER_PLUS_URL + encodedName,
-                            HttpMethod.GET);
+                            GET,
+                            KoreanNameRomanizerResponseDto.class);
     }
 
     private HttpEntity<String> NmtRequestToJson(NmtRequestDto nmtRequestDto)
@@ -123,7 +137,8 @@ public class PapagoService {
 
     private HttpHeaders getHttpHeader() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        MediaType mediaType = new MediaType("application", "json", UTF_8);
+        headers.setContentType(mediaType);
         headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
         headers.set("X-NCP-APIGW-API-KEY", clientSecret);
         return headers;

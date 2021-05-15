@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NmtMessageResultResponseDto {
 
+    private String srcLangType;
+
+    private String tarLangType;
+
     private String translatedText;
 
 }

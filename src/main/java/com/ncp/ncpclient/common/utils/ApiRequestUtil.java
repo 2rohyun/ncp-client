@@ -5,12 +5,14 @@ import com.ncp.ncpclient.sens.exception.SensExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,17 +32,12 @@ public class ApiRequestUtil<T> {
      * @param <T> : dto generic type
      * @return : ResponseEntity<T>
      */
-    public static <T> ResponseEntity<T> sendRequest(HttpEntity<String> requestToJson, String url, HttpMethod method) throws URISyntaxException {
+    public static <T> ResponseEntity<T> sendRequest(HttpEntity<String> requestToJson,
+                                                    String url,
+                                                    HttpMethod method,
+                                                    Class<T> clazz) throws URISyntaxException {
         RestTemplate restTemplate = new RestTemplate();
-//        if (!validateURL(url)) {
-//            throw new SensException(SensExceptionType.INVALID_URL);
-//        }
-        return restTemplate.exchange(new URI(url), method, requestToJson, new ParameterizedTypeReference<>() {
-            @Override
-            public Type getType() {
-                return super.getType();
-            }
-        });
+        return restTemplate.exchange(new URI(url), method, requestToJson, clazz);
     }
 
     //TODO ( fix regexp or change exception throw logic )

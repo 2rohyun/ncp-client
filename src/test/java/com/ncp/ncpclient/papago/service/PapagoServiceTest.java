@@ -31,10 +31,8 @@ class PapagoServiceTest {
     @DisplayName("번역 성공 : 한국어 -> 영어")
     void translationKoToEn() throws IOException, URISyntaxException {
         ResponseEntity<NmtResponseDto> translation = papagoService.translation("ko", "en", "안녕하세요 저는 이도현입니다.");
-        System.out.println("translation = " + translation.toString());
-        NmtResponseDto nmtResponseDto = objectMapper.readValue(translation.getBody().toString(), NmtResponseDto.class);
-        System.out.println("nmtResponseDto = " + nmtResponseDto);
-
+        System.out.println("translation = " + translation);
+        System.out.println(translation.getBody().getMessage().getResult().getTranslatedText());
     }
 
     @Test
@@ -42,7 +40,6 @@ class PapagoServiceTest {
     void translationEnToKoHonorific() throws JsonProcessingException, URISyntaxException {
         ResponseEntity<NmtResponseDto> translation = papagoService.translation("en", "ko", "hello, I am dohyun! nice to meet you", true);
         System.out.println("translation = " + translation);
-
     }
 
     @Test
@@ -55,8 +52,8 @@ class PapagoServiceTest {
     @Test
     @DisplayName("로마나이저 성공")
     void romanizationSuccess() throws URISyntaxException {
-        ResponseEntity<KoreanNameRomanizerResponseDto> romanization = papagoService.romanization("이 도현");
-        System.out.println("romanization = " + romanization.getBody().getAResult());
+        ResponseEntity<KoreanNameRomanizerResponseDto> romanization = papagoService.romanization("이도현");
+        System.out.println("romanization = " + romanization);
     }
 
 }
