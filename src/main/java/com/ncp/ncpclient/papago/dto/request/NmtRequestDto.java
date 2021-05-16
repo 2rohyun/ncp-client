@@ -1,19 +1,23 @@
 package com.ncp.ncpclient.papago.dto.request;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class NmtRequestDto {
 
+    @NotBlank
     private String source;
 
+    @NotBlank
     private String target;
 
+    @NotBlank
     private String text;
 
     private boolean honorific;

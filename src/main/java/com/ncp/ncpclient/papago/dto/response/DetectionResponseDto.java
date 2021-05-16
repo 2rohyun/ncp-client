@@ -8,12 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NmtMessageResultResponseDto {
+public class DetectionResponseDto {
 
-    private String srcLangType;
-
-    private String tarLangType;
-
-    private String translatedText;
+    private String langCode;
 
 }

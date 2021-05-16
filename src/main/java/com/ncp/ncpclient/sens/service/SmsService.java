@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.ncp.ncpclient.common.utils.ApiRequestUtil.*;
+import static org.springframework.http.HttpMethod.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,8 @@ public class SmsService {
         SmsRequestDto smsRequestDto = createSmsRequest(recipientPhoneNumber, content);
         return sendRequest(smsRequestToJson(smsRequestDto),
                         BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL,
-                            HttpMethod.POST);
+                            POST,
+                            SmsResponseDto.class);
     }
 
     /**
@@ -73,7 +75,8 @@ public class SmsService {
         SmsRequestDto smsRequestDto = createSmsRequest(recipientPhoneNumber, content, countryCode);
         return sendRequest(smsRequestToJson(smsRequestDto),
                         BASE_URL + BASE_SMS_URL + serviceId + SEND_SMS_URL,
-                            HttpMethod.POST);
+                            POST,
+                            SmsResponseDto.class);
     }
 
     /**
@@ -84,7 +87,8 @@ public class SmsService {
             throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException {
         return sendRequest(searchMessageRequestToJson(requestId),
                         BASE_URL + BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + requestId,
-                            HttpMethod.GET);
+                            GET,
+                            SearchRequestResponseDto.class);
     }
 
     /**
@@ -95,7 +99,8 @@ public class SmsService {
             throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException {
         return sendRequest(searchMessageResultToJson(messageId),
                         BASE_URL + BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + messageId,
-                            HttpMethod.GET);
+                            GET,
+                            SearchResultResponseDto.class);
     }
 
     private HttpEntity<String> smsRequestToJson(SmsRequestDto smsRequestDto)
@@ -151,12 +156,14 @@ public class SmsService {
         headers.set("x-ncp-iam-access-key", access);
 
         if(url.contains("?")){
-            String sig = initService.makeSignature(time,"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + id);
+            String sig = initService.makeSignature(time,"GET",
+                                                BASE_SMS_URL + serviceId + SEARCH_MESSAGES_REQUEST_URL + id);
             headers.set("x-ncp-apigw-signature-v2", sig);
             return headers;
         }
 
-        String sig = initService.makeSignature(time,"GET", BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + id);
+        String sig = initService.makeSignature(time,"GET",
+                                            BASE_SMS_URL + serviceId + SEARCH_MESSAGES_RESULT_URL + id);
         headers.set("x-ncp-apigw-signature-v2", sig);
         return headers;
     }
