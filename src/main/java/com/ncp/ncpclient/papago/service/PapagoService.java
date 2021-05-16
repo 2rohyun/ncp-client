@@ -9,17 +9,11 @@ import com.ncp.ncpclient.papago.dto.response.KoreanNameRomanizerResponseDto;
 import com.ncp.ncpclient.papago.dto.response.NmtResponseDto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.buf.Utf8Encoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.UnsupportedEncodingException;
 import java.net.*;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 import static com.ncp.ncpclient.common.utils.ApiRequestUtil.sendRequest;
 import static java.net.URLEncoder.encode;
@@ -119,7 +113,7 @@ public class PapagoService {
     }
 
     private HttpEntity<String> RomanizationRequestToJson() {
-        HttpHeaders headers = getHttpHeader();
+        HttpHeaders headers = getHttpHeaderWithoutType();
         return new HttpEntity<>(headers);
     }
 
@@ -137,10 +131,19 @@ public class PapagoService {
 
     private HttpHeaders getHttpHeader() {
         HttpHeaders headers = new HttpHeaders();
-        MediaType mediaType = new MediaType("application", "json", UTF_8);
-        headers.setContentType(mediaType);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
         headers.set("X-NCP-APIGW-API-KEY", clientSecret);
+        return headers;
+    }
+
+    private HttpHeaders getHttpHeaderWithoutType() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
+        headers.set("X-NCP-APIGW-API-KEY", clientSecret);
+        headers.set("Accept", "*/*");
+        headers.set("Host", "naveropenapi.apigw.ntruss.com");
         return headers;
     }
 

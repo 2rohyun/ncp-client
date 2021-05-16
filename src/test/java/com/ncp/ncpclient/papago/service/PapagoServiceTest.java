@@ -1,8 +1,6 @@
 package com.ncp.ncpclient.papago.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ncp.ncpclient.papago.dto.response.DetectionResponseDto;
 import com.ncp.ncpclient.papago.dto.response.KoreanNameRomanizerResponseDto;
 import com.ncp.ncpclient.papago.dto.response.NmtResponseDto;
@@ -12,20 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
-import java.io.DataInput;
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PapagoServiceTest {
 
     @Autowired
     private PapagoService papagoService;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("번역 성공 : 한국어 -> 영어")
@@ -46,7 +38,7 @@ class PapagoServiceTest {
     @DisplayName("언어 탐지 성공 : 한국어")
     void detectionLanguageKoSuccess() throws URISyntaxException, JsonProcessingException {
         ResponseEntity<DetectionResponseDto> detection = papagoService.detection("안녕하세요 이도현입니다.");
-        System.out.println("detection = " + detection.getBody().getLangCode());
+        System.out.println("detection = " + detection);
     }
 
     @Test

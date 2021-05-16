@@ -16,4 +16,19 @@ public class AResultResponseDto {
 
     private List<AItemsResponseDto> aItems;
 
+    public String getsFirstName() {
+        return sFirstName;
+    }
+
+    public void setsFirstName(String sFirstName) {
+        this.sFirstName = sFirstName;
+    }
+
+    public List<AItemsResponseDto> getaItems() {
+        return aItems;
+    }
+
+    public void setaItems(List<AItemsResponseDto> aItems) {
+        this.aItems = aItems;
+    }
 }

@@ -24,7 +24,7 @@ class SmsServiceTest {
     @DisplayName("문자 메세지 전송 - 성공 ( 국가 코드 default )")
     void sendSmsWithDefaultCountryCode() throws NoSuchAlgorithmException, URISyntaxException, UnsupportedEncodingException, InvalidKeyException, JsonProcessingException {
         ResponseEntity<SmsResponseDto> res = smsService.sendSms("01072117883", "문자 제대로 가는지 테스트임ㅋ");
-        System.out.println("res = " + res);
+        System.out.println("res = " + res.getBody().getRequestId());
 
 
     }

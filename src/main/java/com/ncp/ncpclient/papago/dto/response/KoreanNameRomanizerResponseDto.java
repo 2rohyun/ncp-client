@@ -14,4 +14,11 @@ public class KoreanNameRomanizerResponseDto {
 
     private List<AResultResponseDto> aResult;
 
+    public List<AResultResponseDto> getaResult() {
+        return aResult;
+    }
+
+    public void setaResult(List<AResultResponseDto> aResult) {
+        this.aResult = aResult;
+    }
 }
